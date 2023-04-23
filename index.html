@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+    background: radial-gradient(circle at center, #130505, #83682e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+text {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+}
+</style>
+
+<body>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+  <script>
+
+function wordCloud(selector) {
+    var fill = d3.scale.category10();
+
+    var svg = d3.select(selector).append("svg")
+        .attr("width", window.innerWidth)
+        .attr("height", window.innerHeight)
+        .append("g")
+        .attr("transform", "translate(" + window.innerWidth / 2 + "," + window.innerHeight / 2 + ")");
+
+    // Move the circle element inside the "g" element
+    svg.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", 500)
+        .style("fill", "#1a1a1a", "opacity", "0.5");
+        
+    var g = svg.append("g")
+        .attr("transform", "translate(" + window.innerWidth / 2 + "," + window.innerHeight / 2 + ")");
+
+        function draw(words) {
+    var cloud = svg.selectAll("g text")
+                    .data(words, function(d) { return d.text; })
+
+    // Set the x and y properties for each word
+
+   
+    
+    words.forEach((word, i) => {
+        word.x = -250 + (i * 50);
+        word.y = -100 + (i * 75);
+    });
+
+    // Entering words
+    cloud.enter()
+        .append("text")
+        .style("font-family", "Roboto")
+        .style("fill", function(d, i) { return fill(i); })
+        .attr('font-size', 1)
+        .text(function(d) { return d.text; });
+
+    // Entering and existing words
+    cloud
+        .transition()
+            .duration(600)
+            .style("font-size", function(d) { return d.size + "px"; })
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")";
+            })
+            .style("fill-opacity", 1);
+
+    // Exiting words
+    cloud.exit()
+        .transition()
+            .duration(200)
+            .style('fill-opacity', 1e-6)
+            .attr('font-size', 1)
+            .remove();
+}
+
+
+    return {
+        update: function(words) {
+            d3.layout.cloud().size([window.innerWidth, window.innerHeight])
+                .words(words)
+                .padding(5)
+                .font("Courier New")
+                .fontSize(function(d) { return d.size; })
+                .on("end", draw)
+                .start();
+        }
+    }
+}
+
+function getWords(i) {
+    return words[i]
+            .replace(/[!\.,:;\?]/g, '')
+            .split(' ')
+            .map(function(d) {
+                return {text: d, size: 80};
+            })
+}
+
+var words = [
+        'Prepare The Ground','Atma','The Lie That Is Sin','Upon The Sight Of The Other Shore','Adrift In The Ocean','Burning The Altar','Quantum Mystic','Grasping Air','Jeffrey Epstein On The Subway','Zoloft','Hebrew Subway Dude','Butt Implants','Trail Of Tears','Cubans Hang-Gliding Into Miami','Five Year Old Children','Size Eight Feet','Dentist Sex Life','Twins Renting An Apartment In New York','Five Year Olds','Robert Deniros Stalker','An American Football Player','Being A Beast','Feeding Gizmo After Dark','Mexico','India','South Africa','New Zealand','Prince Andrew Grocery Shopping','Steven Spielbergs Jaws','Steven Spielberg & Pachycephalosaurus','Shreks Swamp','Ironing','Mango Videos','Shrek','Red Headed Girls Avoiding Therapy','Opium Den&Asian Toenails','Meghan Markle','Mating Habits Of Sheep','Waldos Midlife Crisis','Bryce Harper & The Phillies','Dog Abortion','Liz Truss Saturday Night Underwear','Bulgarian Princess','Coked Up Canadian Ski Jumper','Monkey Surgeon','Bestiality','Jerry Sandusky','Taylor Swift On Safari In Africa','Spotted Dick','Braces','Whoopee Cushion','Populism','Dragons Breathing Fire','Wardrobe','James Bond In Texas','Nirvana','Your Glasses','Jail! Psychology','Nigerian Lawyer Who Loves Air Fryers','New York Jets','No!','Being Trapped In An Open House','Ancient Greek Brothel','Magic Sorcerer','Neanderthal Dna','Chaise Longue','Big Feet With Long Toenails','F1 Podium','Daddy Lumberjack','Stoicism For Cats','Claustrophobia','Mole Person Love Song','Crumbs In My Butter','Margaret Thatchers Evil Twin','Failed Flat Earth Experiments','Moist Socks','Bubonic Plague','Brick','Heroin','Theatre Club','Cast Iron Skillet','Vegetarians','Megan Markle','Irish Famine','Home Run','Caribbean Reparations','Eskimo Sex','Deep Sea Creatures','Bad Bunny','Marijuana Farmer','Your Fourth Stroke','Medium Sized Penises','Life In A Post- Apocalyptic World','Austin Powers','Snowstorm','Self-Conscious Viking','Condom','Inner Workings Of A Pulp Mill','Egotistical Brain','Bolshevik Revolution','The Choir','Supportive Dads Rapping','Fat Dog','Short Sighted Raccoon','Unicorn In Schindlers List','Multisyllabic','Belly Button','Tinky Winky','Carthage Must Be Destroyed','Pube Flossing','Boris"s Ball Insurance','Scurryfunge','Colonoscopy Mexican Stand Off','Atlanta','Culture','Ayahuasca','Blueberries!','Ummm...Probably Blades','Trumps Manicurist','Orgasms','Hippocampal Atrophy','Public Toilet','Cortland Park','Its A Nasty One','Beaver Tail','Deep Fried Donut','Fried Goodness In Your Lips','His Money Dont Jiggle Jiggle','It Folds','Taxidermy','Kangaroo','Foley Catheter','Management Consultant','Uterus','Bill De Blasio','Hurricane Ida','Your Priest Who Just Got Caught With A Small Boy','Whiskey Rye','Hockey! Ice Hockey!','Boris Johnson','His Hair','Taylor Swift','Colonisation & Railways','Asparagus','Uses For Vaseline','Licking Weenises','The Queen Existing','Incest In Game Of Thrones','Princess Di','Game Of Thrones Incest','Wales','Dental Hygiene','Fortnite Building','Kony 2012','Baby Archie','Queefs','Ray Rice','Vasectomy','Feudalism','Genghis Khan','Bungee Jumping','Intro','Daffy Duck','Daffy & Donald Duck','Wile E. Coyote','Pennsylvania Dutch','Antiquing For Lamps','Bleecker St. Haberdashery','Victorian Rap','Range Rover','Alpine Skiing','Imperialism','Kanye West','Edinburgh','Cotton Socks','Wild Card Suggestion','Golf Balls','The Gays','Erectile Dysfunction','The Queens Depression','Putins Bedroom','The Guy Who Spray Tans Trump','Gandalf','New York Love Story','Occupying Kabul Airport','Disappointment','Abortion','Mohel','Squeegee','Do Bisexuals Exist','Beat By Evan Duffy','Brexit','Gordon Ramsay','Toothpick','Paperclip', 'Kama Sutra','Meth Lab Rescue Dog','Egyptian Pickup Lines','Condom In A Top Hat','Putins Short Man Syndrome','Homeless People On The Subway','Sleeping Substitute Teacher','Chrysanthemums','Schrödingers Cat','Amish Manual Tractors','First Old White Man In The Philippines','The Viking Who Discovered America','Samurai Swords','Princess Di','Incest','Paul Rudd','Vikings In America','Global Warming & Ice Caps','Child Support','Vaccination','Allergies & Sneezing','English People Tea','Bris','Girl Scouts','Fidel Castro','Chlamydia','Persian Rug','Lindisfarne','Intro','Seizures','Lights Go Out','Light Based Humor','Freestyle Rap','Freestyle Rules','Rumplestiltskin','Income Inequality','Violin','Andy Agassi','Rap','Obama Pleasuring Himself','British Women','Colonisation','Kanye West','Melania Trumps Thoughts','Ferris Wheel Falling Off And Rolling Away','Matt The Software Dad','Falafel','Yeast Infection','Tony Blair','Matt The Dad','Hammer Toe','Dirty Slimy Nasty Foot On A Train','Queen Elizabeths Feet','Intro','Dave Chappelle','Ted Lasso','Jacob Reesmogg','The Matrix','Back Of The Room','The Fermi Paradox','The Rap','Online Cannibal Forum','Trans Eunuch In Staten Island','Model In The Metaverse','High School Swingers','Bojo','Cardiff Castle','Elon Musk Slate Stage Capitalism','Slime','Toothpaste','Ceance Peel Pimp Eyebrows','Potato','Meatspin','Spongebob Anal','Taco Bell','Tony Soprano','Apogee Playground','Circular Economy','Fitness','Crypto Trading','Influencer Baby','Solar Powered Flashlight','Walmart Dustbowl','East Hamptons Moms','Jews For Jesus','Afghanistan','The Little Mermaid','Cockney Rhyming Slang','Parrots Existential Crisis','Croatian Bathing Suit','Birth Control','Louisiana Purchase','Birthday Lemon Cake','Iowa Farmer','Overpriced Stripper','Jeffrey Epstein','Sweater Vest','Bricklayer Finds Gold','How Pluto Feels...','Menstruation','Botulism','Cuddle','Metapusical Paradox','Britney Spears','Intro','Dental Dams','Nyc Bagel','Do I Floss Everyday','Dark Satanic Ritual','Koala W/ Wine & Cupcakes','Nuns On A Bike','Prince Philips Afterlife','Beat: Crow By Sedivi','Florida Tailgate','Brazilian Girls','White Women Golf','Ira In Southern Ireland','Last Day On Mars','France Into Spain','Russian Vodka','Franz Kline 47 Moma','Hamburg','Mermaid Heartbreak','Trump Pee Tapes','Werewolf Ride','Anal Bleaching','Tag Tactics','Real Estate Agents...','Spaceforce & Zombies','Refrigerators','Waterfalls','Black History Month','Homeschool Pole Vault','Harry Potters Wand','Marine Biology Professor','Red Light District','Borderline Personality Disorder','Othello','Population Growth','Nikola Tesla','Monkey Torture','Hanes Tighty Wateys','North Dakota','Russian Revolution','Rock','Paper','Scissoring','Bigfoot Data Science','Quicksand','Diamond Earrings','Jousting','Tropical Daydreams Of Seychelles','Pickleball','Carrot','Green','Chicken','Comics','Freestyle','The Shambles In York','Types Of Purses','Getting Engaged','Fly Fishing While Eating A Lamb Curry','Kansas City Chiefs','A Kid Cutting His Thumb Off In Woodshop','Covid Quarantine','Shih Tzu','Sec Football','Jeffrey Epstein','Labor Day','Hacking','Wanker','Civil War','Kama Sutra','Azerbaijan','Detroits Grit','Beat: George - Depo Beats','Spinifex','Next Stop Azkaban','Adult Circumcision','Rumplestiltskin','Overweight Fireman','Competition In Volleyball','The Donner Party','Transformational Journey Into The Hybrid Cloud','Transformational Journey...','Vatican Dumpster','Guys With Beards','Growing Up In A Funeral Home','Who Loves Kanye More Than Kanye','Beat: Night Thoughts - Sedivi','Racism','Safe Porn Usage','Root Canal Kayaking','Gsm Of Paper','Arabic Botox','Oxbow Lake','Basketball Tinder Date Minnesota Beauty Pageant','White Privilege','Winning Rodeos','Medical Debt','Houston Astros...','Dodge Vs Delorean','Sex Toy & Tsa','Urologist','Sasquatch With Sequins','Lawn Care','Personal Income Taxes','Children On Leashes','Andys 50Th Birthday','Ash Wednesday','Days Of The Week','Fallopian Tubes...','Bad Facial Hair','Lord Lucan','Astronaut','Axolotl','Beat: Cali - Chase Beats','Chug It!','Popemobile','Abbey Road','Leprechauns Cognitive Dissonance & Rainbows','Houndstooth Clothing','Yeah Baby','Sherlock Holmes Smegma','Intro','A Check For £47.86','Nurofen (Painkillers)','Tie Clip (Owned By A German)','Thug Life Shades','The First Of Three Inhalers...','Makeup Brush','Butlins Keycard','Learners Permit','Protracter From Xmas Cracker','Polo Mints','The Second Of Three Inhalers...','Matcha Green Teabag','Diamanté Hair Clip','Assorted Offerings','Green Vaseline','Votive Candle','Empty Pitcher','Acorn','Lipstick (Again)','Green Fingernail Toy','Bingo Dauber','Tangle Teezer','Travel Size Perfume','Fan Made From A Flyer','The Third Of Three Inhalers...','Terrys Chocolate Orange','H&M Bag Containing A Dead Sheep','2 For 1 Amusement Park Voucher','Perfume Sample','Wet Umbrella','George - Depo Beats','Urinal Cake','Bicycle Pump','Rapunzel With An Afro','Stanchion (Reprise)','Netball (Wing Defence)','Diamonds On The Soles Of My Shoes','Hang Gliding...','Hang Gliding With Your Mum','Bad Hair Day','Kim Jong-Un','Jeffrey Epstein','Meghan & Harry','Poutine','Twin Boys','Baby Yoda Bonus','Pruno','The Kids That Didnt Make It...','Sex In Space','Tsa Reform','Wheres Waldo','Hardcore Pc Gaming','Rap Starts At','Water Based Cremation','Wild','Dumpster','Crowded','Triangle','Futon','Octopus','Ambiance','Catty Whompus','Defenestrate','Discombobulated','Shetland','Bumbershoot','Snotball','Peach','Spelunking','Mango','Trapdoor','Marshmallow','Cervix','Deep Dive'
+
+]
+//Create a new instance of the word cloud visualisation.
+var myWordCloud = wordCloud('body');
+
+//Start cycling through the demo data
+showNewWords();
+
+function showNewWords() {
+    myWordCloud.update(getWords(Math.floor(Math.random() * words.length)))
+    setTimeout(showNewWords, 2000)
+}
+
+// console.log("Name: " + d.text,
+// "xoff: " + d.xoff,
+// "yoff: " + d.yoff,
+// "x1: " + d.x1,
+// "y1: " + d.y1,
+// "x0: " + d.x0,
+// "y0: " + d.y0,
+// "x: " + d.x,
+// "y: " + d.y)
+
+// Elon xoff: 0 yoff: 0 x1: 192 y1: 161 x0: -192 y0: -92 x: 205 y: 169
+// Musk xoff: 384 yoff: 0 x1: 176 y1: 181 x0: -176 y0: -137 x: -161 y: 221
+// Slate xoff: 736 yoff: 0 x1: 192 y1: 207 x0: -192 y0: -151 x: -240 y: -128
+// Stage xoff: 1120 yoff: 0 x1: 192 y1: 99 x0: -192 y0: -64 x: 12 y: -54
+// Capitalism xoff: 1504 yoff: 0 x1: 256 y1: 339 x0: -256 y0: -284 x: -377 y: -41
+
+//  xoff yoff x1 y1 x0 y0 x y
+
+</script>
